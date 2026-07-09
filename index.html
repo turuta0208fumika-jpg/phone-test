@@ -18,6 +18,22 @@
         radial-gradient(circle at 12% 7%, rgba(37, 99, 235, 0.3), transparent 26%),
         radial-gradient(circle at 88% 18%, rgba(14, 165, 233, 0.18), transparent 28%),
         linear-gradient(180deg, #eff6ff 0%, #f8fafc 50%, #ffffff 100%);
+      line-break: strict;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+
+    p,
+    h1,
+    h2,
+    h3,
+    a,
+    button,
+    span,
+    li {
+      line-break: strict;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
     }
 
     .screen {
@@ -38,7 +54,14 @@
     .keep-text {
       word-break: keep-all;
       overflow-wrap: anywhere;
+      line-break: strict;
       line-height: 1.75;
+    }
+
+    .type-name {
+      line-height: 1.65;
+      word-break: keep-all;
+      overflow-wrap: normal;
     }
 
     .choice-card,
@@ -133,13 +156,13 @@
     .cta-btn {
       position: relative;
       overflow: hidden;
-      min-height: 56px;
+      min-height: 58px;
       background:
-        radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.32), transparent 28%),
-        linear-gradient(135deg, #10b981 0%, #22c55e 45%, #f59e0b 100%);
+        radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.36), transparent 30%),
+        linear-gradient(135deg, #2563eb 0%, #0ea5e9 45%, #10b981 100%);
       box-shadow:
-        0 18px 35px rgba(16, 185, 129, 0.35),
-        0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+        0 18px 35px rgba(37, 99, 235, 0.32),
+        0 0 0 1px rgba(255, 255, 255, 0.22) inset;
     }
 
     .cta-btn::before {
@@ -147,7 +170,7 @@
       position: absolute;
       inset: 2px;
       border-radius: 1rem;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 55%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent 58%);
       pointer-events: none;
     }
 
@@ -158,7 +181,7 @@
       left: -45%;
       width: 42%;
       height: 170%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.48), transparent);
       transform: rotate(18deg);
       transition: left 0.72s ease;
       pointer-events: none;
@@ -166,8 +189,8 @@
 
     .cta-btn:hover {
       box-shadow:
-        0 24px 48px rgba(245, 158, 11, 0.36),
-        0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+        0 24px 48px rgba(14, 165, 233, 0.36),
+        0 0 0 1px rgba(255, 255, 255, 0.22) inset;
     }
 
     .cta-btn:hover::after {
@@ -232,7 +255,7 @@
             </h1>
 
             <p class="relative mt-3 text-sm font-medium leading-7 text-blue-50 keep-text">
-              キャリア適性とITスキルをもとに、今のあなたに最適な学習プランと<br>最短ロードマップを診断します。
+              キャリア適性とITスキルをもとに、今のあなたに最適な学習プランと最短ロードマップを診断します。
             </p>
 
             <div class="relative mt-5 grid grid-cols-3 gap-2">
@@ -313,7 +336,7 @@
   </main>
 
   <script>
-    const STORAGE_KEY = 'ninjacode_it_career_diagnosis_v4';
+    const STORAGE_KEY = 'ninjacode_it_career_diagnosis_v5';
 
     const questions = [
       {
@@ -330,7 +353,7 @@
       {
         id: 'career_02',
         type: 'career',
-        question: '学習に使える時間はどれくらい？',
+        question: '学習に使える時間はどれくらいですか？',
         options: [
           { label: 'A', text: '週3時間ほど。無理なく進めたい', reason: '無理なく学習したい', scores: { SELF: 2, SIDE: 0, FREE: 0, CAREER: 0 } },
           { label: 'B', text: '週5〜10時間ほど。副業準備に使いたい', reason: '副業に向けて時間を確保できる', scores: { SELF: 0, SIDE: 2, FREE: 0, CAREER: 0 } },
@@ -363,7 +386,7 @@
       {
         id: 'career_05',
         type: 'career',
-        question: '学習の目的に一番近いものは？',
+        question: 'Web制作を学ぶ目的に一番近いものは？',
         options: [
           { label: 'A', text: 'まずは基礎を身につけたい', reason: 'まずは基礎を固めたい', scores: { SELF: 2, SIDE: 0, FREE: 0, CAREER: 0 } },
           { label: 'B', text: '月数万円の副収入を目指したい', reason: '月数万円の副収入を目指している', scores: { SELF: 0, SIDE: 2, FREE: 0, CAREER: 0 } },
@@ -470,17 +493,17 @@
         suitableFor: ['費用を抑えて始めたい方', 'まずは基礎を学びたい方', '仕事や生活と両立したい方'],
         support: ['教材閲覧無期限', 'チャット質問無期限'],
         roadmap: [
-          ['🧭', 'STEP1', 'HTML/CSSの基礎理解', 'まずはページ構造とデザイン指定の基本を習得します。'],
-          ['💻', 'STEP2', 'JavaScriptによる動的実装', 'ボタン操作やアニメーションなど、サイトに動きをつける方法を学びます。'],
-          ['🎨', 'STEP3', '実践課題に挑戦', '実務を意識したバナーやLP制作に挑戦します。'],
-          ['📁', 'STEP4', 'ポートフォリオ化', '作ったものを整理し、自分のスキルを他人に証明できる準備を整えます。'],
-          ['🚀', 'STEP5', '次の目標を設定', '副業・転職・フリーランスなど次の方向性を決めます。']
+          ['01', 'STEP1', 'HTML/CSSの基礎理解', 'まずはページ構造とデザイン指定の基本を習得します。'],
+          ['02', 'STEP2', 'JavaScriptによる動的実装', 'ボタン操作やアニメーションなど、サイトに動きをつける方法を学びます。'],
+          ['03', 'STEP3', '実践課題に挑戦', '実務を意識したバナーやLP制作に挑戦します。'],
+          ['04', 'STEP4', 'ポートフォリオ化', '作ったものを整理し、自分のスキルを他人に証明できる準備を整えます。'],
+          ['05', 'STEP5', '次の目標を設定', '副業・転職・フリーランスなど次の方向性を決めます。']
         ]
       },
       SIDE: {
         label: '副業プラン',
         catchyName: '副業',
-        typeName: '在宅・副業スタートダッシュタイプ',
+        typeName: '在宅・副業<br>スタートダッシュタイプ',
         goal: '副業で月5万円を目指す',
         finalGoal: '副業で月5万円の収入獲得を目指す',
         ctaText: '副業プランの詳細を見る',
@@ -491,17 +514,17 @@
         suitableFor: ['本業と両立して副業したい方', '月数万円の副収入を目指したい方', '案件獲得までサポートがほしい方'],
         support: ['課題添削', '案件紹介5万円分', 'ポートフォリオ支援'],
         roadmap: [
-          ['🧱', 'STEP1', 'Web制作・Webデザインの基礎固め', 'HTML/CSS/JavaScriptを学び制作の土台を作ります。'],
-          ['🛠️', 'STEP2', '実践課題に挑戦', '実務を意識したバナーやLP制作に挑戦します。'],
-          ['📁', 'STEP3', 'ポートフォリオ準備', '提案時に見せられる制作実績を整えます。'],
-          ['✉️', 'STEP4', '案件応募準備', '提案文や応募文を作成し、受注準備を進めます。'],
-          ['💰', 'STEP5', '副業案件に挑戦', '小さな案件から実績を作り、副業収入の第一歩を目指します。']
+          ['01', 'STEP1', 'Web制作・Webデザインの基礎固め', 'HTML/CSS/JavaScriptを学び制作の土台を作ります。'],
+          ['02', 'STEP2', '実践課題に挑戦', '実務を意識したバナーやLP制作に挑戦します。'],
+          ['03', 'STEP3', 'ポートフォリオ準備', '提案時に見せられる制作実績を整えます。'],
+          ['04', 'STEP4', '案件応募準備', '提案文や応募文を作成し、受注準備を進めます。'],
+          ['05', 'STEP5', '副業案件に挑戦', '小さな案件から実績を作り、副業収入の第一歩を目指します。']
         ]
       },
       FREE: {
         label: 'フリーランスプラン',
         catchyName: 'フリーランス',
-        typeName: '自由な働き方実現タイプ',
+        typeName: '自由な働き方<br>実現タイプ',
         goal: '案件獲得力を高め、独立に近づく',
         finalGoal: 'フリーランスで月10万円の収入獲得（独立への一歩）',
         ctaText: 'フリーランスプランの詳細を見る',
@@ -512,17 +535,17 @@
         suitableFor: ['将来的に独立したい方', '場所に縛られず働きたい方', '制作実績を作り込みたい方'],
         support: ['無期限サポート', '1対1メンタリング', '案件紹介10万円分'],
         roadmap: [
-          ['🧱', 'STEP1', '基礎から実装力を強化', 'Web制作・Webデザインの基本を学び、実務で使える形に整えます。'],
-          ['🎯', 'STEP2', '高品質な制作物を作成', '実務を意識した制作物を作成し、実践的な力を身につけます。'],
-          ['📣', 'STEP3', '営業・提案準備', 'ポートフォリオを作成し、案件獲得のための提案文作成やクラウドソーシングでの応募を開始します。'],
-          ['🤝', 'STEP4', '案件対応力を強化', '営業・納期管理・修正対応・顧客対応の基礎を身につけます。'],
-          ['🚀', 'STEP5', '継続案件を目指す', '単発案件から継続案件へつなげる動きを学びます。']
+          ['01', 'STEP1', '基礎から実装力を強化', 'Web制作・Webデザインの基本を学び、実務で使える形に整えます。'],
+          ['02', 'STEP2', '高品質な制作物を作成', '実務を意識した制作物を作成し、実践的な力を身につけます。'],
+          ['03', 'STEP3', '営業・提案準備', 'ポートフォリオを作成し、案件獲得のための提案文作成やクラウドソーシングでの応募を開始します。'],
+          ['04', 'STEP4', '案件対応力を強化', '営業・納期管理・修正対応・顧客対応の基礎を身につけます。'],
+          ['05', 'STEP5', '継続案件を目指す', '単発案件から継続案件へつなげる動きを学びます。']
         ]
       },
       CAREER: {
         label: '転職支援プラン',
         catchyName: '転職',
-        typeName: '未経験からの最速キャリア転職タイプ',
+        typeName: '未経験からの<br>最速キャリア転職タイプ',
         goal: 'Web業界への転職を目指す',
         finalGoal: '未経験からWeb業界への最速キャリア転職を成功させる',
         ctaText: '転職支援プランの詳細を見る',
@@ -533,11 +556,11 @@
         suitableFor: ['Web業界に転職したい方', '未経験からキャリアチェンジしたい方', '学習後の進路まで相談したい方'],
         support: ['履歴書・職務経歴書添削', '面接対策', '求人・キャリア紹介'],
         roadmap: [
-          ['🧱', 'STEP1', '基礎スキル習得', 'HTML/CSS/JavaScriptを中心に、Web制作・デザインの基礎を固めます。'],
-          ['💻', 'STEP2', '実践的なスキルの習得', '実務を意識した課題制作で実践力を身につけます。'],
-          ['📝', 'STEP3', '転職用制作物を作成', '応募時に見せられるポートフォリオを整えます。'],
-          ['🎤', 'STEP4', '応募書類を準備', '履歴書・職務経歴書・自己PRを整えます。'],
-          ['🏢', 'STEP5', '面接対策・Web業界へ応募', '面接対策を行い、転職活動を具体的に進めます。']
+          ['01', 'STEP1', '基礎スキル習得', 'HTML/CSS/JavaScriptを中心に、Web制作・デザインの基礎を固めます。'],
+          ['02', 'STEP2', '実践的なスキルの習得', '実務を意識した課題制作で実践力を身につけます。'],
+          ['03', 'STEP3', '転職用制作物を作成', '応募時に見せられるポートフォリオを整えます。'],
+          ['04', 'STEP4', '応募書類を準備', '履歴書・職務経歴書・自己PRを整えます。'],
+          ['05', 'STEP5', '面接対策・Web業界へ応募', '面接対策を行い、転職活動を具体的に進めます。']
         ]
       }
     };
@@ -745,9 +768,9 @@
               前半の診断結果
             </p>
 
-            <h2 class="relative mt-5 text-[25px] font-black leading-tight keep-text">
+            <h2 class="relative mt-5 text-[25px] font-black leading-tight">
               あなたの適性タイプは<br />
-              <span class="text-yellow-200">「${content.typeName}」</span>
+              <span class="type-name text-yellow-200">${content.typeName}</span>
             </h2>
 
             <p class="relative mt-4 text-sm font-medium leading-7 text-blue-50 keep-text">
@@ -768,10 +791,10 @@
             <div class="mt-5 rounded-3xl border border-blue-100 bg-white p-5 shadow-sm">
               <p class="text-xs font-black text-blue-600">NEXT STEP</p>
               <h3 class="mt-2 text-lg font-black text-slate-900 keep-text">
-                次に進むと、あなた専用の<br>ロードマップを生成します
+                次に進むと、あなた専用のロードマップを生成します
               </h3>
               <p class="mt-3 text-sm font-bold leading-7 text-slate-600 keep-text">
-                5問のWeb知識クイズで現在地を測定し、学習期間・難易度・次にやるべきステップを<br>より正確に表示します。
+                5問のWeb知識クイズで現在地を測定し、学習期間・難易度・次にやるべきステップをより正確に表示します。
               </p>
             </div>
 
@@ -992,11 +1015,11 @@
             <div class="absolute bottom-[-60px] left-[-60px] h-44 w-44 rounded-full bg-white/10"></div>
 
             <p class="relative text-sm font-black text-blue-50">あなたに最適な学習プランは…</p>
-            <h2 class="relative mt-3 text-[26px] font-black leading-tight keep-text">
+            <h2 class="relative mt-3 text-[26px] font-black leading-tight">
               【${content.catchyName}】<br />
               プラン
             </h2>
-            <p class="relative mt-3 inline-flex rounded-full bg-white/20 px-4 py-2 text-sm font-black backdrop-blur">
+            <p class="type-name relative mt-3 inline-flex rounded-full bg-white/20 px-4 py-2 text-sm font-black backdrop-blur">
               ${content.typeName}
             </p>
           </div>
@@ -1199,24 +1222,34 @@
     function createCtaHtml(result) {
       return `
         <section class="overflow-hidden rounded-[30px] bg-gradient-to-br from-blue-950 via-blue-900 to-slate-950 p-5 text-white shadow-2xl shadow-blue-100/80">
-          <p class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-black text-emerald-200">
-            診断結果をもとに相談できます
+          <p class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-black text-sky-100">
+            忍者CODE公式の相談窓口
           </p>
 
           <h3 class="mt-4 text-2xl font-black leading-tight keep-text">
-            あなた専用の学習プランを<br />
-            無料メンターに相談してみませんか？
+            忍者CODEの無料メンター相談で、<br />
+            あなた専用の学習プランを確認しませんか？
           </h3>
 
           <p class="mt-3 text-sm font-medium leading-7 text-blue-50 keep-text">
-            「自分に本当に合っている？」「どのプラン・コースを選ぶべき？」という疑問を、無料メンター相談で確認できます。
+            診断結果をもとに、あなたに合うプラン・コース・学習の進め方を無料で相談できます。
           </p>
 
-          <a href="${result.content.consultationUrl}" class="cta-btn mt-6 block rounded-2xl px-5 py-4 text-center text-base font-black text-white">
-            無料相談する
+          <div class="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4">
+            <p class="text-sm font-black leading-7 text-white keep-text">
+              当日予約可能・顔出し不要。まずは不安な点だけの相談でも大丈夫です。
+            </p>
+          </div>
+
+          <a href="${result.content.consultationUrl}" class="cta-btn mt-4 block rounded-2xl px-5 py-4 text-center text-base font-black text-white">
+            忍者CODE公式の無料メンター相談へ
           </a>
 
-          <button onclick="restartDiagnosis()" class="secondary-btn mt-3 w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-sm font-black text-white">
+          <p class="mt-3 text-center text-[11px] font-bold leading-5 text-blue-100 keep-text">
+            無理な勧誘ではなく、診断結果をもとに学習ルートを確認できます。
+          </p>
+
+          <button onclick="restartDiagnosis()" class="secondary-btn mt-4 w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-sm font-black text-white">
             もう一度診断する
           </button>
         </section>

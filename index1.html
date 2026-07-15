@@ -1,0 +1,3273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="theme-color" content="#eff6ff" />
+
+  <title>ITスキル×獲得報酬シミュレーション診断｜忍者CODE</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <style>
+    :root {
+      --blue-950: #172554;
+      --blue-900: #1e3a8a;
+      --blue-800: #1e40af;
+      --blue-700: #1d4ed8;
+      --blue-600: #2563eb;
+      --blue-500: #3b82f6;
+      --sky-500: #0ea5e9;
+      --emerald-500: #10b981;
+      --emerald-600: #059669;
+      --orange-500: #f97316;
+      --slate-950: #020617;
+      --slate-900: #0f172a;
+      --slate-800: #1e293b;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-500: #64748b;
+      --slate-400: #94a3b8;
+      --slate-300: #cbd5e1;
+      --slate-200: #e2e8f0;
+      --slate-100: #f1f5f9;
+      --slate-50: #f8fafc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: #eff6ff;
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      color: var(--slate-800);
+      font-family:
+        "Noto Sans JP",
+        "Hiragino Kaku Gothic ProN",
+        "Yu Gothic",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+      line-break: strict;
+      word-break: normal;
+      overflow-wrap: break-word;
+      background:
+        radial-gradient(
+          circle at 10% 6%,
+          rgba(37, 99, 235, 0.27),
+          transparent 25%
+        ),
+        radial-gradient(
+          circle at 90% 20%,
+          rgba(14, 165, 233, 0.17),
+          transparent 28%
+        ),
+        linear-gradient(
+          180deg,
+          #eff6ff 0%,
+          #f8fafc 48%,
+          #ffffff 100%
+        );
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .screen {
+      animation: fade-slide 0.32s ease both;
+    }
+
+    @keyframes fade-slide {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .jp-text {
+      line-break: strict;
+      word-break: normal;
+      overflow-wrap: break-word;
+      text-wrap: pretty;
+    }
+
+    .manual-break {
+      word-break: keep-all;
+      overflow-wrap: normal;
+      line-height: 1.55;
+    }
+
+    .hero-panel {
+      position: relative;
+      isolation: isolate;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(30, 64, 175, 0.99) 0%,
+          rgba(37, 99, 235, 0.97) 48%,
+          rgba(14, 165, 233, 0.95) 100%
+        );
+    }
+
+    .hero-panel::before {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+      opacity: 0.65;
+      background-image:
+        linear-gradient(
+          rgba(255, 255, 255, 0.075) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.075) 1px,
+          transparent 1px
+        );
+      background-size: 28px 28px;
+      mask-image: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.88),
+        transparent 92%
+      );
+    }
+
+    .hero-circle {
+      position: absolute;
+      border-radius: 9999px;
+      pointer-events: none;
+    }
+
+    .glass-chip {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(14px);
+    }
+
+    .soft-glass {
+      border: 1px solid rgba(191, 219, 254, 0.8);
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+    }
+
+    .choice-card,
+    .primary-button,
+    .secondary-button,
+    .official-cta {
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        filter 0.25s ease;
+    }
+
+    .choice-card {
+      min-height: 66px;
+    }
+
+    .choice-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--blue-600);
+      background: #eff6ff;
+      box-shadow: 0 14px 30px rgba(37, 99, 235, 0.13);
+    }
+
+    .choice-card:active {
+      transform: translateY(0) scale(0.995);
+    }
+
+    .choice-card.is-selected {
+      border-color: var(--blue-600);
+      background: #dbeafe;
+      box-shadow:
+        0 14px 30px rgba(37, 99, 235, 0.16),
+        0 0 0 1px rgba(37, 99, 235, 0.07);
+    }
+
+    .primary-button:hover,
+    .secondary-button:hover,
+    .official-cta:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary-button:active,
+    .secondary-button:active,
+    .official-cta:active {
+      transform: translateY(1px) scale(0.99);
+    }
+
+    .primary-button:disabled {
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .shine {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shine::after {
+      position: absolute;
+      top: 0;
+      left: -130%;
+      width: 68%;
+      height: 100%;
+      content: "";
+      pointer-events: none;
+      transform: skewX(-18deg);
+      transition: left 0.75s ease;
+      background:
+        linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.4),
+          transparent
+        );
+    }
+
+    .shine:hover::after {
+      left: 135%;
+    }
+
+    .official-cta {
+      position: relative;
+      display: flex;
+      min-height: 60px;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background:
+        radial-gradient(
+          circle at 18% 16%,
+          rgba(255, 255, 255, 0.35),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #2563eb 0%,
+          #0ea5e9 48%,
+          #10b981 100%
+        );
+      box-shadow:
+        0 19px 38px rgba(14, 165, 233, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .official-cta::before {
+      position: absolute;
+      inset: 2px;
+      content: "";
+      pointer-events: none;
+      border-radius: 14px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.22),
+          transparent 58%
+        );
+    }
+
+    .official-cta::after {
+      position: absolute;
+      top: -35%;
+      left: -48%;
+      width: 42%;
+      height: 180%;
+      content: "";
+      pointer-events: none;
+      transform: rotate(18deg);
+      transition: left 0.72s ease;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.48),
+          transparent
+        );
+    }
+
+    .official-cta:hover {
+      box-shadow:
+        0 25px 50px rgba(16, 185, 129, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.32);
+    }
+
+    .official-cta:hover::after {
+      left: 122%;
+    }
+
+    .bar-fill {
+      transition: width 0.65s ease;
+    }
+
+    .result-bar-fill {
+      width: 0;
+      transition: width 0.75s ease;
+    }
+
+    .route-line {
+      width: 2px;
+      min-height: 42px;
+      margin-top: 8px;
+      background: #dbeafe;
+    }
+
+    .safe-bottom {
+      padding-bottom:
+        calc(24px + env(safe-area-inset-bottom, 0px));
+    }
+
+    @media (hover: none) {
+      .choice-card:hover,
+      .primary-button:hover,
+      .secondary-button:hover,
+      .official-cta:hover {
+        transform: none;
+      }
+
+      .shine:hover::after,
+      .official-cta:hover::after {
+        left: -130%;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .page-shell {
+        padding:
+          14px 12px
+          calc(20px + env(safe-area-inset-bottom, 0px));
+      }
+
+      .hero-title {
+        font-size: 25px;
+        line-height: 1.28;
+      }
+
+      .result-title {
+        font-size: 25px;
+      }
+    }
+
+    @media (max-width: 350px) {
+      .page-shell {
+        padding-inline: 9px;
+      }
+
+      .hero-title {
+        font-size: 23px;
+      }
+
+      .question-card {
+        padding: 18px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page-shell min-h-screen px-4 py-5">
+    <div class="mx-auto w-full max-w-[390px]">
+      <header class="mb-4 flex items-center justify-between gap-3">
+        <div class="flex min-w-0 items-center gap-2">
+          <div
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-sm font-black text-white shadow-lg shadow-blue-200"
+          >
+            N
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-sm font-black text-slate-900">忍者CODE</p>
+            <p class="truncate text-[10px] font-semibold text-slate-500">
+              IT Skill Reward Simulation
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="shrink-0 rounded-full bg-white px-3 py-1 text-[11px] font-bold text-blue-600 shadow-sm"
+        >
+          約3分
+        </div>
+      </header>
+
+      <section id="startScreen" class="screen">
+        <div
+          class="overflow-hidden rounded-[30px] bg-white shadow-2xl shadow-blue-100/80"
+        >
+          <div class="hero-panel overflow-hidden px-5 pb-5 pt-6 text-white">
+            <div
+              class="hero-circle -right-14 -top-14 h-40 w-40 bg-white/20"
+            ></div>
+
+            <div
+              class="hero-circle -bottom-20 -left-16 h-48 w-48 bg-white/10"
+            ></div>
+
+            <div class="relative flex items-center justify-between gap-2">
+              <p
+                class="glass-chip rounded-full px-3 py-1 text-[11px] font-black"
+              >
+                LINE登録者限定｜無料診断
+              </p>
+
+              <p
+                class="glass-chip shrink-0 rounded-full px-3 py-1 text-[11px] font-black"
+              >
+                全12問
+              </p>
+            </div>
+
+            <h1
+              class="hero-title relative mt-4 text-[28px] font-black tracking-tight"
+            >
+              3分でわかる！<br />
+              適性IT職種と<br />
+             想定収入診断
+            </h1>
+
+            <p
+              class="jp-text relative mt-3 text-sm font-medium leading-7 text-blue-50"
+            >
+              目標金額や理想の働き方、IT分野への興味から、あなたに合う職種と最短ロードマップを提案します。
+            </p>
+
+            <div class="relative mt-5 grid grid-cols-3 gap-2">
+              <div class="rounded-2xl bg-white/15 p-2.5 text-center backdrop-blur">
+                <p class="text-base font-black">7問</p>
+                <p class="text-[10px] font-bold text-blue-50">報酬・働き方</p>
+              </div>
+
+              <div class="rounded-2xl bg-white/15 p-2.5 text-center backdrop-blur">
+                <p class="text-base font-black">5問</p>
+                <p class="text-[10px] font-bold text-blue-50">IT職種適性</p>
+              </div>
+
+              <div class="rounded-2xl bg-white/15 p-2.5 text-center backdrop-blur">
+                <p class="text-base font-black">5種</p>
+                <p class="text-[10px] font-bold text-blue-50">職種診断</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-5 py-5">
+            <div
+              class="soft-glass rounded-3xl border border-blue-100 p-4 shadow-sm"
+            >
+              <p class="text-sm font-black text-slate-900">診断でわかること</p>
+
+              <div class="mt-3 space-y-2.5">
+                <div class="flex items-start gap-3">
+                  <span
+                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white"
+                  >
+                    1
+                  </span>
+
+                  <p
+                    class="jp-text pt-0.5 text-sm font-bold leading-6 text-slate-700"
+                  >
+                    現実的に目指しやすい獲得報酬
+                  </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <span
+                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-sky-500 text-xs font-black text-white"
+                  >
+                    2
+                  </span>
+
+                  <p
+                    class="jp-text pt-0.5 text-sm font-bold leading-6 text-slate-700"
+                  >
+                    あなたと相性のよいIT職種
+                  </p>
+                </div>
+
+                <div class="flex items-start gap-3">
+                  <span
+                    class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-xs font-black text-white"
+                  >
+                    3
+                  </span>
+
+                  <p
+                    class="jp-text pt-0.5 text-sm font-bold leading-6 text-slate-700"
+                  >
+                    目標到達までの専用ロードマップ
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              id="startBtn"
+              type="button"
+              class="primary-button shine mt-5 w-full rounded-2xl bg-blue-600 px-5 py-4 text-base font-black text-white shadow-lg shadow-blue-200"
+            >
+              シミュレーションを始める
+            </button>
+
+            <p class="mt-3 text-center text-[11px] font-semibold text-slate-400">
+              個人情報の入力なしで診断できます
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="questionScreen" class="screen hidden">
+        <div
+          class="question-card rounded-[30px] bg-white p-5 shadow-xl shadow-blue-100/70"
+        >
+          <div class="mb-5">
+            <div class="mb-2 flex items-center justify-between gap-3">
+              <p
+                id="questionCount"
+                class="text-xs font-black text-blue-600"
+              ></p>
+
+              <p
+                id="questionCategory"
+                class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-black text-blue-600"
+              ></p>
+            </div>
+
+            <div class="h-2 overflow-hidden rounded-full bg-slate-200">
+              <div
+                id="progressBar"
+                class="bar-fill h-full rounded-full bg-blue-600"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <h2
+            id="questionText"
+            class="jp-text min-h-[88px] text-xl font-black leading-8 text-slate-900"
+          ></h2>
+
+          <div id="choices" class="mt-5 space-y-3"></div>
+
+          <div class="mt-6 flex gap-3">
+            <button
+              id="backBtn"
+              type="button"
+              class="secondary-button w-1/2 rounded-2xl border border-slate-300 bg-white px-4 py-3.5 text-sm font-black text-slate-600"
+            >
+              戻る
+            </button>
+
+            <button
+              id="nextBtn"
+              type="button"
+              class="primary-button w-1/2 rounded-2xl bg-blue-600 px-4 py-3.5 text-sm font-black text-white shadow-lg shadow-blue-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+            >
+              次へ
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="middleScreen" class="screen hidden"></section>
+      <section id="resultScreen" class="screen hidden"></section>
+    </div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "ninjacode_reward_simulation_course_v2";
+
+    const JOB_KEYS = [
+      "WEB_PRODUCE",
+      "WEB_DESIGN",
+      "VIDEO_EDIT",
+      "ENGINEER",
+      "WEB_WRITER"
+    ];
+
+    const JOB_LABELS = {
+      WEB_PRODUCE: "Web制作",
+      WEB_DESIGN: "Webデザイン",
+      VIDEO_EDIT: "動画編集",
+      ENGINEER: "開発エンジニア",
+      WEB_WRITER: "Webライター"
+    };
+
+    const questions = [
+      {
+        id: "reward_01",
+        section: "reward",
+        question: "ITスキルを使って、最初に目指したい月収は？",
+        options: [
+          {
+            label: "A",
+            text: "月3〜5万円の副収入",
+            reason: "まずは月3〜5万円の副収入を目指している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 3,
+              ENGINEER: 0,
+              WEB_WRITER: 4
+            }
+          },
+          {
+            label: "B",
+            text: "月10〜20万円の安定収入",
+            reason: "月10〜20万円の安定収入を目指している",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 4,
+              VIDEO_EDIT: 2,
+              ENGINEER: 1,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "C",
+            text: "月30〜50万円以上",
+            reason: "月30万円以上の収入を目標にしている",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 1,
+              ENGINEER: 5,
+              WEB_WRITER: 2
+            }
+          },
+          {
+            label: "D",
+            text: "金額より、まず自分に合う仕事を知りたい",
+            reason: "収入額より職種との相性を重視している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 1,
+              ENGINEER: 1,
+              WEB_WRITER: 1
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_02",
+        section: "reward",
+        question: "理想に最も近い働き方は？",
+        options: [
+          {
+            label: "A",
+            text: "本業を続けながら在宅副業",
+            reason: "本業と両立できる在宅副業を希望している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 4,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 4,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          },
+          {
+            label: "B",
+            text: "フリーランスとして自由に働く",
+            reason: "フリーランスとして自由に働きたい",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 3,
+              ENGINEER: 2,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "C",
+            text: "IT企業へ転職して収入を上げる",
+            reason: "IT業界への転職で収入アップを目指している",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 0,
+              ENGINEER: 5,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "D",
+            text: "会社に依存しない複数の収入源を作る",
+            reason: "複数の収入源を持ちたい",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 2,
+              ENGINEER: 1,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_03",
+        section: "reward",
+        question: "1週間に確保できる学習時間は？",
+        options: [
+          {
+            label: "A",
+            text: "週3時間未満",
+            reason: "少ない時間から無理なく始めたい",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 2,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          },
+          {
+            label: "B",
+            text: "週3〜7時間",
+            reason: "週3〜7時間の学習時間を確保できる",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 3,
+              ENGINEER: 1,
+              WEB_WRITER: 4
+            }
+          },
+          {
+            label: "C",
+            text: "週8〜15時間",
+            reason: "週8時間以上を学習に使える",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 4,
+              WEB_DESIGN: 4,
+              VIDEO_EDIT: 3,
+              ENGINEER: 3,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "D",
+            text: "週16時間以上",
+            reason: "本格的に学習時間を確保できる",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 4,
+              VIDEO_EDIT: 3,
+              ENGINEER: 5,
+              WEB_WRITER: 2
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_04",
+        section: "reward",
+        question: "収入を得られるようになるまでの希望期間は？",
+        options: [
+          {
+            label: "A",
+            text: "1〜2か月以内に小さく始めたい",
+            reason: "短期間で最初の収入を得たい",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 5,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          },
+          {
+            label: "B",
+            text: "3〜6か月で副業を始めたい",
+            reason: "3〜6か月で副業開始を目指している",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 4,
+              VIDEO_EDIT: 3,
+              ENGINEER: 2,
+              WEB_WRITER: 4
+            }
+          },
+          {
+            label: "C",
+            text: "半年〜1年かけて高収入を目指したい",
+            reason: "時間をかけて高収入につながる力を身につけたい",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 1,
+              ENGINEER: 5,
+              WEB_WRITER: 2
+            }
+          },
+          {
+            label: "D",
+            text: "期間より、自分に合う方法を優先したい",
+            reason: "期間より継続しやすさを優先している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 2,
+              ENGINEER: 2,
+              WEB_WRITER: 2
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_05",
+        section: "reward",
+        question: "仕事を選ぶとき、最も重視したいことは？",
+        options: [
+          {
+            label: "A",
+            text: "案件を獲得しやすいこと",
+            reason: "案件の始めやすさを重視している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 4,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          },
+          {
+            label: "B",
+            text: "自分の感性やアイデアを活かせること",
+            reason: "感性やアイデアを活かせる仕事を希望している",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 4,
+              ENGINEER: 0,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "C",
+            text: "専門性が高く、収入を伸ばせること",
+            reason: "専門性と将来の収入アップを重視している",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 1,
+              ENGINEER: 5,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "D",
+            text: "場所や時間に縛られないこと",
+            reason: "場所や時間に縛られない働き方を希望している",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 3,
+              ENGINEER: 2,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_06",
+        section: "reward",
+        question: "パソコンを使った作業で、比較的苦にならないものは？",
+        options: [
+          {
+            label: "A",
+            text: "細かな修正や地道な作業",
+            reason: "細かな修正や積み上げ型の作業が苦になりにくい",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 4,
+              ENGINEER: 3,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "B",
+            text: "見た目や配置を整える作業",
+            reason: "見た目やレイアウトを整える作業が好き",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 3,
+              ENGINEER: 0,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "C",
+            text: "原因を調べて解決する作業",
+            reason: "原因を調べて問題を解決することが好き",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 0,
+              VIDEO_EDIT: 1,
+              ENGINEER: 5,
+              WEB_WRITER: 3
+            }
+          },
+          {
+            label: "D",
+            text: "情報をまとめて伝える作業",
+            reason: "情報を整理し、分かりやすく伝えることが好き",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 2,
+              ENGINEER: 1,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "reward_07",
+        section: "reward",
+        question: "仕事を始める際、どのような支援があると安心ですか？",
+        options: [
+          {
+            label: "A",
+            text: "案件獲得や応募のサポート",
+            reason: "案件獲得や応募の支援を求めている",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 3,
+              ENGINEER: 1,
+              WEB_WRITER: 4
+            }
+          },
+          {
+            label: "B",
+            text: "作品やポートフォリオの添削",
+            reason: "制作物やポートフォリオの添削を重視している",
+            rewardLevel: 2,
+            scores: {
+              WEB_PRODUCE: 3,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 4,
+              ENGINEER: 2,
+              WEB_WRITER: 2
+            }
+          },
+          {
+            label: "C",
+            text: "転職書類・面接・求人の支援",
+            reason: "転職活動まで一貫した支援を希望している",
+            rewardLevel: 3,
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 0,
+              ENGINEER: 5,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "D",
+            text: "必要なときに質問できれば十分",
+            reason: "必要なときだけ質問できる環境を希望している",
+            rewardLevel: 1,
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 2,
+              ENGINEER: 2,
+              WEB_WRITER: 4
+            }
+          }
+        ]
+      },
+      {
+        id: "aptitude_01",
+        section: "aptitude",
+        question: "作業を進めるとき、どちらの感覚に近いですか？",
+        options: [
+          {
+            label: "A",
+            text: "順序やルールを考えて組み立てるのが好き",
+            reason: "論理的に順序を組み立てることが得意",
+            scores: {
+              WEB_PRODUCE: 4,
+              WEB_DESIGN: 0,
+              VIDEO_EDIT: 1,
+              ENGINEER: 5,
+              WEB_WRITER: 2
+            }
+          },
+          {
+            label: "B",
+            text: "見た目の印象やバランスを考えるのが好き",
+            reason: "見た目の印象やバランスを考えることが得意",
+            scores: {
+              WEB_PRODUCE: 2,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 4,
+              ENGINEER: 0,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "C",
+            text: "相手に伝わる流れや表現を考えるのが好き",
+            reason: "相手に伝わる表現や構成を考えることが得意",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 3,
+              VIDEO_EDIT: 3,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          },
+          {
+            label: "D",
+            text: "まだ分からない",
+            reason: "幅広い分野を比較して適性を探したい",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 1,
+              ENGINEER: 1,
+              WEB_WRITER: 1
+            }
+          }
+        ]
+      },
+      {
+        id: "aptitude_02",
+        section: "aptitude",
+        question: "完成したとき、最もうれしいと感じそうなのは？",
+        options: [
+          {
+            label: "A",
+            text: "Webサイトが正しく表示・動作したとき",
+            reason: "Webサイトを形にする達成感に魅力を感じる",
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 0,
+              ENGINEER: 3,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "B",
+            text: "デザインがきれいに仕上がったとき",
+            reason: "デザインが完成する達成感に魅力を感じる",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 2,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "C",
+            text: "動画がテンポよく完成したとき",
+            reason: "映像を編集して作品にすることに魅力を感じる",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 5,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "D",
+            text: "記事や文章が分かりやすく完成したとき",
+            reason: "文章や記事を完成させる達成感に魅力を感じる",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 0,
+              ENGINEER: 1,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "aptitude_03",
+        section: "aptitude",
+        question: "普段、つい見たり調べたりするものは？",
+        options: [
+          {
+            label: "A",
+            text: "Webサイトや新しいサービス",
+            reason: "Webサイトや新しいオンラインサービスに関心がある",
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 0,
+              ENGINEER: 3,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "B",
+            text: "広告・バナー・おしゃれなデザイン",
+            reason: "広告やビジュアルデザインへの関心が高い",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 2,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "C",
+            text: "YouTube・ショート動画・映像作品",
+            reason: "動画コンテンツを日常的に見ている",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 5,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "D",
+            text: "記事・ニュース・解説コンテンツ",
+            reason: "記事や解説コンテンツを読むことが多い",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 0,
+              VIDEO_EDIT: 0,
+              ENGINEER: 1,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "aptitude_04",
+        section: "aptitude",
+        question: "仕事として取り組むなら、最も興味があるものは？",
+        options: [
+          {
+            label: "A",
+            text: "Webサイトを作る",
+            reason: "Webサイト制作に興味がある",
+            scores: {
+              WEB_PRODUCE: 5,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 0,
+              ENGINEER: 2,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "B",
+            text: "バナーや画面をデザインする",
+            reason: "バナーや画面デザインに興味がある",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 2,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "C",
+            text: "動画を編集する",
+            reason: "動画編集に興味がある",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 5,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "D",
+            text: "記事やコンテンツを書く",
+            reason: "記事やコンテンツ制作に興味がある",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 1,
+              VIDEO_EDIT: 0,
+              ENGINEER: 0,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      },
+      {
+        id: "aptitude_05",
+        section: "aptitude",
+        question: "新しいツールを使うとき、どの方法が自分に合っていますか？",
+        options: [
+          {
+            label: "A",
+            text: "実際にコードを書きながら覚える",
+            reason: "手を動かしながら論理的に学ぶことが得意",
+            scores: {
+              WEB_PRODUCE: 4,
+              WEB_DESIGN: 0,
+              VIDEO_EDIT: 0,
+              ENGINEER: 5,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "B",
+            text: "見本を参考にデザインを作る",
+            reason: "見本を参考にビジュアルを作ることが得意",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 5,
+              VIDEO_EDIT: 3,
+              ENGINEER: 0,
+              WEB_WRITER: 0
+            }
+          },
+          {
+            label: "C",
+            text: "素材を編集して完成形に近づける",
+            reason: "素材を編集して完成度を高めることが得意",
+            scores: {
+              WEB_PRODUCE: 1,
+              WEB_DESIGN: 2,
+              VIDEO_EDIT: 5,
+              ENGINEER: 0,
+              WEB_WRITER: 1
+            }
+          },
+          {
+            label: "D",
+            text: "情報を調べて文章にまとめる",
+            reason: "調べた情報を文章にまとめることが得意",
+            scores: {
+              WEB_PRODUCE: 0,
+              WEB_DESIGN: 0,
+              VIDEO_EDIT: 0,
+              ENGINEER: 1,
+              WEB_WRITER: 5
+            }
+          }
+        ]
+      }
+    ];
+
+    const resultContents = {
+      WEB_PRODUCE: {
+        label: "Web制作コース",
+        shortLabel: "Web制作",
+        typeName: "在宅副業に強い<br>Web制作実践タイプ",
+        potentialLabel: "月5〜10万円ロード",
+        goal:
+          "Web制作の基礎をマスターし、副業・在宅で月5〜10万円の案件を安定獲得する",
+        ctaText: "Web制作コースの詳細を見る",
+        ctaUrl: "https://ninjacode.work/courses/web",
+        consultationUrl: "https://ninjacode.work/counseling",
+        comment:
+          "あなたは、成果物が目に見えやすく、案件にもつながりやすいスキルと相性があります。HTML・CSS・JavaScriptを順番に学び、まずは小規模なWeb制作案件から実績を作るルートが向いています。",
+        rewardRange: "月5〜10万円",
+        estimatedPeriod: "3〜6か月",
+        workStyle: "在宅副業・業務委託",
+        features: [
+          "案件の種類が比較的豊富",
+          "制作実績を作りやすい",
+          "副業から段階的に始めやすい"
+        ],
+        suitableFor: [
+          "在宅で副収入を得たい方",
+          "コツコツ制作を進められる方",
+          "完成物を積み上げたい方"
+        ],
+        skills: [
+          "HTML・CSS",
+          "JavaScript",
+          "レスポンシブ対応",
+          "Webサイト制作"
+        ],
+        roadmap: [
+          {
+            step: "STEP1",
+            title: "HTML・CSSの基礎",
+            description:
+              "Webページの構造と見た目を作る基本を身につけます。"
+          },
+          {
+            step: "STEP2",
+            title: "レスポンシブ実装",
+            description:
+              "スマートフォンとパソコンの両方で見やすいサイトを作ります。"
+          },
+          {
+            step: "STEP3",
+            title: "JavaScriptの基礎",
+            description:
+              "メニューやボタンなど、動きのある画面を実装します。"
+          },
+          {
+            step: "STEP4",
+            title: "制作実績を準備",
+            description:
+              "企業サイトやLPを制作し、ポートフォリオにまとめます。"
+          },
+          {
+            step: "STEP5",
+            title: "副業案件に応募",
+            description:
+              "小規模な案件から受注し、月5〜10万円を目指します。"
+          }
+        ]
+      },
+
+      WEB_DESIGN: {
+        label: "Webデザインコース",
+        shortLabel: "Webデザイン",
+        typeName: "感性を収入に変える<br>Webデザインタイプ",
+        potentialLabel: "月15〜20万円ロード",
+        goal:
+          "デザインスキルとバナー・LP制作を武器に、フリーランスとして月15〜20万円を稼ぐ",
+        ctaText: "Webデザインコースの詳細を見る",
+        ctaUrl: "https://ninjacode.work/courses/design",
+        consultationUrl: "https://ninjacode.work/counseling",
+        comment:
+          "あなたは、見た目の印象や情報の配置を考える力を収入につなげやすいタイプです。バナーやLP制作から実績を作り、デザインと提案力を磨くことで継続案件を目指せます。",
+        rewardRange: "月15〜20万円",
+        estimatedPeriod: "4〜8か月",
+        workStyle: "フリーランス・在宅",
+        features: [
+          "感性やアイデアを活かせる",
+          "バナーやLPから実績を作れる",
+          "継続案件や高単価案件を狙いやすい"
+        ],
+        suitableFor: [
+          "デザインを見ることが好きな方",
+          "レイアウトや配色に興味がある方",
+          "フリーランスを目指したい方"
+        ],
+        skills: [
+          "配色・レイアウト",
+          "バナー制作",
+          "LPデザイン",
+          "デザイン提案"
+        ],
+        roadmap: [
+          {
+            step: "STEP1",
+            title: "デザイン基礎",
+            description:
+              "配色・余白・文字組み・レイアウトの基本を学びます。"
+          },
+          {
+            step: "STEP2",
+            title: "デザインツールの操作",
+            description:
+              "バナーやWeb画面を制作する基本操作を身につけます。"
+          },
+          {
+            step: "STEP3",
+            title: "バナー・LP制作",
+            description:
+              "広告や集客を意識した制作物を複数作ります。"
+          },
+          {
+            step: "STEP4",
+            title: "ポートフォリオ作成",
+            description:
+              "得意なテイストや対応範囲が伝わる実績集を整えます。"
+          },
+          {
+            step: "STEP5",
+            title: "継続案件を獲得",
+            description:
+              "提案と改善を重ね、月15〜20万円を目指します。"
+          }
+        ]
+      },
+
+      VIDEO_EDIT: {
+        label: "動画編集コース",
+        shortLabel: "動画編集",
+        typeName: "短期スタート型<br>動画編集タイプ",
+        potentialLabel: "月5万円スタートロード",
+        goal:
+          "YouTubeやSNS動画の編集スキルを最短で身につけ、月5万円の副収入からスタートする",
+        ctaText: "動画編集コースの詳細を見る",
+        ctaUrl: "https://ninjacode.work/courses/movie",
+        consultationUrl: "https://ninjacode.work/counseling",
+        comment:
+          "あなたは、映像のテンポや見せ方を整え、短期間で成果物を作る仕事と相性があります。基本操作を覚えた後は、YouTube動画やショート動画を制作し、小さな案件から経験を積む方法が現実的です。",
+        rewardRange: "月3〜5万円",
+        estimatedPeriod: "2〜4か月",
+        workStyle: "在宅副業",
+        features: [
+          "短期間で基礎を習得しやすい",
+          "YouTubeやSNS案件に対応できる",
+          "成果物を作りながら上達できる"
+        ],
+        suitableFor: [
+          "動画を見ることが好きな方",
+          "細かな調整が苦にならない方",
+          "早めに副業を始めたい方"
+        ],
+        skills: [
+          "カット編集",
+          "テロップ・音声調整",
+          "ショート動画制作",
+          "動画構成"
+        ],
+        roadmap: [
+          {
+            step: "STEP1",
+            title: "編集ソフトの基本",
+            description:
+              "素材の読み込み、カット、書き出しの流れを覚えます。"
+          },
+          {
+            step: "STEP2",
+            title: "テロップと音声",
+            description:
+              "見やすい文字入れと聞きやすい音声調整を学びます。"
+          },
+          {
+            step: "STEP3",
+            title: "SNS動画を制作",
+            description:
+              "短尺動画とYouTube動画のサンプルを作ります。"
+          },
+          {
+            step: "STEP4",
+            title: "制作実績を公開",
+            description:
+              "編集前後の違いが分かる実績を整理します。"
+          },
+          {
+            step: "STEP5",
+            title: "月5万円を目指す",
+            description:
+              "継続的な編集案件を受注し、副収入を安定させます。"
+          }
+        ]
+      },
+
+      ENGINEER: {
+        label: "開発エンジニアコース",
+        shortLabel: "開発エンジニア",
+        typeName: "高収入キャリア型<br>開発エンジニアタイプ",
+        potentialLabel: "月収大幅アップロード",
+        goal:
+          "本格的なプログラミング言語を習得し、IT業界への最速キャリア転職で月収大幅アップを目指す",
+        ctaText: "開発エンジニアコースの詳細を見る",
+        ctaUrl: "https://ninjacode.work/courses/java",
+        consultationUrl: "https://ninjacode.work/counseling",
+        comment:
+          "あなたは、原因を調べて仕組みを作ることに向いています。学習期間は必要ですが、専門性を高めることで転職や長期的な収入アップにつながりやすい職種です。",
+        rewardRange: "転職後の月収アップ",
+        estimatedPeriod: "6〜12か月",
+        workStyle: "IT企業への転職",
+        features: [
+          "専門性を高めやすい",
+          "転職による収入アップを狙える",
+          "長期的なキャリアを築きやすい"
+        ],
+        suitableFor: [
+          "論理的に考えることが好きな方",
+          "原因を調べて解決できる方",
+          "IT業界へ転職したい方"
+        ],
+        skills: [
+          "プログラミング基礎",
+          "Webアプリ開発",
+          "データベース",
+          "ポートフォリオ開発"
+        ],
+        roadmap: [
+          {
+            step: "STEP1",
+            title: "プログラミング基礎",
+            description:
+              "変数・条件分岐・繰り返し・関数の考え方を学びます。"
+          },
+          {
+            step: "STEP2",
+            title: "Web開発の基礎",
+            description:
+              "画面・サーバー・データベースのつながりを理解します。"
+          },
+          {
+            step: "STEP3",
+            title: "アプリケーション制作",
+            description:
+              "実務を意識したWebサービスを開発します。"
+          },
+          {
+            step: "STEP4",
+            title: "転職用ポートフォリオ",
+            description:
+              "技術選定や実装内容を説明できる作品を整えます。"
+          },
+          {
+            step: "STEP5",
+            title: "IT企業へ応募",
+            description:
+              "書類・面接対策を行い、キャリア転職を目指します。"
+          }
+        ]
+      },
+
+      WEB_WRITER: {
+        label: "Webライターコース",
+        shortLabel: "Webライター",
+        typeName: "情報を分かりやすく伝える<br>Webライタータイプ",
+        potentialLabel: "月5〜15万円ロード",
+        goal:
+          "文章構成・リサーチ・SEOの基礎を身につけ、Webライターとして月5〜15万円の収入獲得を目指す",
+        ctaText: "Webライターコースの詳細を見る",
+        ctaUrl: "https://ninjacode.work/courses/writing",
+        consultationUrl: "https://ninjacode.work/counseling",
+        comment:
+          "あなたは、情報を整理し、相手に分かりやすく伝える仕事と相性があります。文章作成だけでなく、リサーチ・構成・編集まで対応できるようになると、継続案件や高単価案件を目指しやすくなります。",
+        rewardRange: "月5〜15万円",
+        estimatedPeriod: "2〜5か月",
+        workStyle: "在宅副業・業務委託",
+        features: [
+          "比較的少ない学習時間から始めやすい",
+          "在宅案件と相性がよい",
+          "記事制作から編集・ディレクションへ展開できる"
+        ],
+        suitableFor: [
+          "文章を書くことが苦にならない方",
+          "情報を調べて整理することが好きな方",
+          "在宅で副業を始めたい方"
+        ],
+        skills: [
+          "文章構成",
+          "Webリサーチ",
+          "SEOライティング",
+          "編集・校正"
+        ],
+        roadmap: [
+          {
+            step: "STEP1",
+            title: "文章構成の基礎",
+            description:
+              "結論・理由・具体例を整理し、読みやすい文章を作る方法を学びます。"
+          },
+          {
+            step: "STEP2",
+            title: "Webリサーチ",
+            description:
+              "信頼できる情報を探し、記事に必要な内容を整理します。"
+          },
+          {
+            step: "STEP3",
+            title: "SEO記事を制作",
+            description:
+              "検索意図を理解し、読者の疑問を解決する記事を作ります。"
+          },
+          {
+            step: "STEP4",
+            title: "執筆実績を準備",
+            description:
+              "複数の記事サンプルを作り、応募時に提示できる状態にします。"
+          },
+          {
+            step: "STEP5",
+            title: "継続案件を獲得",
+            description:
+              "記事執筆や編集案件を受注し、月5〜15万円を目指します。"
+          }
+        ]
+      }
+    };
+
+    const state = {
+      currentIndex: 0,
+      answers: Array(questions.length).fill(null),
+      screen: "start"
+    };
+
+    const startScreen = document.getElementById("startScreen");
+    const questionScreen = document.getElementById("questionScreen");
+    const middleScreen = document.getElementById("middleScreen");
+    const resultScreen = document.getElementById("resultScreen");
+    const startBtn = document.getElementById("startBtn");
+    const questionCount = document.getElementById("questionCount");
+    const questionCategory = document.getElementById("questionCategory");
+    const progressBar = document.getElementById("progressBar");
+    const questionText = document.getElementById("questionText");
+    const choices = document.getElementById("choices");
+    const backBtn = document.getElementById("backBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    startBtn.addEventListener("click", () => {
+      state.currentIndex = 0;
+      state.screen = "question";
+
+      saveState();
+      setHash("question");
+      renderQuestion();
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (state.currentIndex === 0) {
+        state.screen = "start";
+
+        saveState();
+        clearHash();
+        showOnly("start");
+        scrollToTop();
+
+        return;
+      }
+
+      if (state.currentIndex === 7) {
+        state.currentIndex = 6;
+        state.screen = "middle";
+
+        saveState();
+        setHash("middle");
+        renderMiddleScreen();
+
+        return;
+      }
+
+      state.currentIndex -= 1;
+      state.screen = "question";
+
+      saveState();
+      setHash("question");
+      renderQuestion();
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (state.answers[state.currentIndex] === null) {
+        return;
+      }
+
+      if (state.currentIndex === 6) {
+        state.screen = "middle";
+
+        saveState();
+        setHash("middle");
+        renderMiddleScreen();
+
+        return;
+      }
+
+      if (state.currentIndex === questions.length - 1) {
+        showResult();
+        return;
+      }
+
+      state.currentIndex += 1;
+      state.screen = "question";
+
+      saveState();
+      setHash("question");
+      renderQuestion();
+    });
+
+    document.addEventListener("DOMContentLoaded", restoreSavedState);
+
+    window.addEventListener("pageshow", () => {
+      const savedState = loadState();
+
+      if (!savedState) {
+        return;
+      }
+
+      if (
+        savedState.screen === "result" &&
+        isCompleteAnswers(savedState.answers)
+      ) {
+        applySavedState(savedState);
+        showResult(false);
+      }
+    });
+
+    window.addEventListener("popstate", () => {
+      const savedState = loadState();
+
+      if (
+        location.hash === "#result" &&
+        savedState &&
+        isCompleteAnswers(savedState.answers)
+      ) {
+        applySavedState(savedState);
+        state.screen = "result";
+        showResult(false);
+        return;
+      }
+
+      if (
+        location.hash === "#middle" &&
+        savedState &&
+        canShowMiddle(savedState.answers)
+      ) {
+        applySavedState(savedState);
+        state.currentIndex = 6;
+        state.screen = "middle";
+        renderMiddleScreen();
+        return;
+      }
+
+      if (location.hash === "#question" && savedState) {
+        applySavedState(savedState);
+        state.screen = "question";
+        renderQuestion();
+        return;
+      }
+
+      state.screen = "start";
+      showOnly("start");
+      scrollToTop();
+    });
+
+    function renderQuestion() {
+      const question = questions[state.currentIndex];
+
+      if (!question) {
+        restartDiagnosis();
+        return;
+      }
+
+      const selectedOptionIndex = state.answers[state.currentIndex];
+      const sectionInfo = getQuestionSectionInfo(state.currentIndex);
+
+      showOnly("question");
+
+      questionCount.textContent =
+        `Question ${sectionInfo.current} / ${sectionInfo.total}`;
+
+      questionCategory.textContent = sectionInfo.categoryLabel;
+      questionText.textContent = question.question;
+
+      progressBar.style.width =
+        `${(sectionInfo.current / sectionInfo.total) * 100}%`;
+
+      nextBtn.disabled = selectedOptionIndex === null;
+
+      nextBtn.textContent =
+        state.currentIndex === questions.length - 1
+          ? "診断結果を見る"
+          : "次へ";
+
+      choices.innerHTML = "";
+
+      question.options.forEach((option, optionIndex) => {
+        const isSelected = selectedOptionIndex === optionIndex;
+        const button = document.createElement("button");
+
+        button.type = "button";
+
+        button.className = [
+          "choice-card",
+          "w-full",
+          "rounded-2xl",
+          "border",
+          "p-4",
+          "text-left",
+          isSelected
+            ? "is-selected"
+            : "border-slate-200 bg-white"
+        ].join(" ");
+
+        button.innerHTML = `
+          <div class="flex items-start gap-3">
+            <span
+              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-black ${
+                isSelected
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 text-slate-500"
+              }"
+            >
+              ${option.label}
+            </span>
+
+            <span
+              class="jp-text min-w-0 pt-1 text-sm font-bold leading-6 text-slate-800"
+            >
+              ${escapeHtml(option.text)}
+            </span>
+          </div>
+        `;
+
+        button.addEventListener("click", () => {
+          state.answers[state.currentIndex] = optionIndex;
+          state.screen = "question";
+
+          saveState();
+          renderQuestion();
+        });
+
+        choices.appendChild(button);
+      });
+
+      scrollToTop();
+    }
+
+    function getQuestionSectionInfo(index) {
+      if (index <= 6) {
+        return {
+          current: index + 1,
+          total: 7,
+          categoryLabel: "報酬・ワークスタイル診断"
+        };
+      }
+
+      return {
+        current: index - 6,
+        total: 5,
+        categoryLabel: "IT職種適性診断"
+      };
+    }
+
+    function renderMiddleScreen() {
+      if (!canShowMiddle(state.answers)) {
+        state.screen = "start";
+        showOnly("start");
+        clearHash();
+        return;
+      }
+
+      const intermediateResult = calculateIntermediateResult();
+      const content = resultContents[intermediateResult.type];
+
+      showOnly("middle");
+
+      middleScreen.innerHTML = `
+        <div
+          class="overflow-hidden rounded-[30px] bg-white shadow-2xl shadow-blue-100/80"
+        >
+          <div
+            class="relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-600 to-sky-500 px-5 py-7 text-white"
+          >
+            <div
+              class="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20"
+            ></div>
+
+            <div
+              class="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-white/10"
+            ></div>
+
+            <p
+              class="relative inline-flex rounded-full bg-white/20 px-3 py-1 text-xs font-black backdrop-blur"
+            >
+              前半のシミュレーション結果
+            </p>
+
+            <p class="relative mt-5 text-sm font-bold text-blue-100">
+              あなたが目指しやすい報酬ポテンシャル
+            </p>
+
+            <h2
+              class="manual-break relative mt-2 text-[27px] font-black"
+            >
+              ${content.potentialLabel}
+            </h2>
+
+            <p
+              class="jp-text relative mt-4 text-sm font-medium leading-7 text-blue-50"
+            >
+              目標金額、働き方、学習時間をもとにすると、現時点では「${content.shortLabel}」を中心としたルートと相性が高い傾向です。
+            </p>
+          </div>
+
+          <div class="px-5 py-5">
+            <section
+              class="rounded-3xl border border-blue-100 bg-blue-50 p-4"
+            >
+              <p class="text-xs font-black text-blue-600">
+                CURRENT POTENTIAL
+              </p>
+
+              <h3
+                class="jp-text mt-1 text-lg font-black text-slate-900"
+              >
+                現在の職種相性スコア
+              </h3>
+
+              <div class="mt-4 space-y-3">
+                ${createIntermediateScoreBars(intermediateResult)}
+              </div>
+            </section>
+
+            <section
+              class="mt-5 rounded-3xl border border-blue-200 bg-white p-5 shadow-[0_12px_32px_rgba(37,99,235,0.10)]"
+            >
+              <p class="text-xs font-black text-blue-600">
+                NEXT STEP
+              </p>
+
+              <h3
+                class="jp-text mt-2 text-lg font-black leading-7 text-slate-900"
+              >
+                次に進むと、あなた専用の職業適性ロードマップを生成します
+              </h3>
+
+              <p
+                class="jp-text mt-3 text-sm font-bold leading-7 text-slate-600"
+              >
+                残り5問で、論理思考・デザイン・動画・文章への興味を確認します。前半の目標金額と掛け合わせて、最終的なおすすめ職種を判定します。
+              </p>
+            </section>
+
+            <button
+              id="goAptitudeBtn"
+              type="button"
+              class="primary-button shine mt-4 w-full rounded-2xl bg-blue-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-blue-200"
+            >
+              IT職種適性診断へ進む
+            </button>
+
+            <p
+              class="mt-3 text-center text-[11px] font-semibold text-slate-400"
+            >
+              残り5問で専用ロードマップが完成します
+            </p>
+          </div>
+        </div>
+      `;
+
+      document
+        .getElementById("goAptitudeBtn")
+        .addEventListener("click", () => {
+          state.currentIndex = 7;
+          state.screen = "question";
+
+          saveState();
+          setHash("question");
+          renderQuestion();
+        });
+
+      scrollToTop();
+    }
+
+    function calculateIntermediateResult() {
+      const scores = createEmptyScores();
+      const rewardLevels = [];
+
+      const rewardQuestions = questions.filter(
+        (question) => question.section === "reward"
+      );
+
+      rewardQuestions.forEach((question, index) => {
+        const selectedIndex = state.answers[index];
+        const selectedOption = question.options[selectedIndex];
+
+        if (!selectedOption) {
+          return;
+        }
+
+        addScores(scores, selectedOption.scores);
+
+        if (Number.isFinite(selectedOption.rewardLevel)) {
+          rewardLevels.push(selectedOption.rewardLevel);
+        }
+      });
+
+      const type = getTopJobType(scores);
+
+      const percentages = normalizeScores(
+        scores,
+        rewardQuestions,
+        15
+      );
+
+      const averageRewardLevel =
+        rewardLevels.length > 0
+          ? rewardLevels.reduce((sum, value) => sum + value, 0) /
+            rewardLevels.length
+          : 1;
+
+      return {
+        type,
+        scores,
+        percentages,
+        averageRewardLevel
+      };
+    }
+
+    function calculateTheoreticalMaxScores(targetQuestions) {
+      return JOB_KEYS.reduce((maximumScores, jobType) => {
+        maximumScores[jobType] = targetQuestions.reduce(
+          (totalMaximum, question) => {
+            const maxScore = Math.max(
+              ...question.options.map(
+                (option) => Number(option.scores?.[jobType]) || 0
+              ),
+              0
+            );
+
+            return totalMaximum + maxScore;
+          },
+          0
+        );
+
+        return maximumScores;
+      }, {});
+    }
+
+    function normalizeScores(
+      scores,
+      targetQuestions,
+      minimumPercentage = 15
+    ) {
+      const theoreticalMaximums =
+        calculateTheoreticalMaxScores(targetQuestions);
+
+      return JOB_KEYS.reduce((percentages, jobType) => {
+        const actualScore = Number(scores[jobType]) || 0;
+        const maximumScore =
+          Number(theoreticalMaximums[jobType]) || 0;
+
+        if (maximumScore <= 0) {
+          percentages[jobType] = minimumPercentage;
+          return percentages;
+        }
+
+        const calculated = Math.round(
+          (actualScore / maximumScore) * 100
+        );
+
+        percentages[jobType] = Math.min(
+          100,
+          Math.max(minimumPercentage, calculated)
+        );
+
+        return percentages;
+      }, {});
+    }
+
+    function createIntermediateScoreBars(result) {
+      const sortedTypes = sortJobTypesByScore(result.scores);
+
+      return sortedTypes.map((jobType) => {
+        const isTop = jobType === result.type;
+        const percentage = result.percentages[jobType];
+
+        return `
+          <div>
+            <div
+              class="mb-1 flex items-center justify-between gap-3"
+            >
+              <span
+                class="${
+                  isTop
+                    ? "font-black text-blue-700"
+                    : "font-bold text-slate-600"
+                } text-xs"
+              >
+                ${JOB_LABELS[jobType]}
+              </span>
+
+              <span
+                class="${
+                  isTop
+                    ? "font-black text-blue-700"
+                    : "font-bold text-slate-500"
+                } text-xs"
+              >
+                ${percentage}%
+              </span>
+            </div>
+
+            <div
+              class="h-2.5 overflow-hidden rounded-full bg-white"
+            >
+              <div
+                class="h-full rounded-full ${
+                  isTop
+                    ? "bg-blue-600"
+                    : "bg-slate-300"
+                }"
+                style="width: ${percentage}%"
+              ></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showResult(shouldPushHash = true) {
+      if (!isCompleteAnswers(state.answers)) {
+        state.screen = "start";
+        showOnly("start");
+        clearHash();
+        return;
+      }
+
+      const result = calculateFinalResult();
+
+      state.currentIndex = questions.length - 1;
+      state.screen = "result";
+
+      saveState();
+
+      if (shouldPushHash) {
+        setHash("result");
+      } else {
+        replaceHash("result");
+      }
+
+      showOnly("result");
+      resultScreen.innerHTML = createResultHtml(result);
+
+      requestAnimationFrame(() => {
+        window.setTimeout(() => {
+          document
+            .querySelectorAll("[data-result-bar]")
+            .forEach((bar) => {
+              bar.style.width = bar.dataset.width;
+            });
+        }, 100);
+      });
+
+      scrollToTop();
+    }
+
+    function calculateFinalResult() {
+      const rewardScores = createEmptyScores();
+      const aptitudeScores = createEmptyScores();
+      const reasons = [];
+      const rewardLevels = [];
+
+      questions.forEach((question, questionIndex) => {
+        const selectedIndex = state.answers[questionIndex];
+        const selectedOption = question.options[selectedIndex];
+
+        if (!selectedOption) {
+          return;
+        }
+
+        if (question.section === "reward") {
+          addScores(rewardScores, selectedOption.scores);
+
+          if (Number.isFinite(selectedOption.rewardLevel)) {
+            rewardLevels.push(selectedOption.rewardLevel);
+          }
+        }
+
+        if (question.section === "aptitude") {
+          addScores(aptitudeScores, selectedOption.scores);
+        }
+
+        if (selectedOption.reason) {
+          reasons.push(selectedOption.reason);
+        }
+      });
+
+      const averageRewardLevel =
+        rewardLevels.length > 0
+          ? rewardLevels.reduce((sum, value) => sum + value, 0) /
+            rewardLevels.length
+          : 1;
+
+      const combinedScores = createEmptyScores();
+
+      JOB_KEYS.forEach((jobType) => {
+        combinedScores[jobType] =
+          rewardScores[jobType] * 0.48 +
+          aptitudeScores[jobType] * 0.52 +
+          getRewardAlignmentBonus(jobType, averageRewardLevel);
+      });
+
+      const type = getTopJobType(combinedScores);
+
+      const percentages = normalizeFinalScores(
+        combinedScores,
+        10
+      );
+
+      const sortedTypes = sortJobTypesByScore(combinedScores);
+
+      return {
+        type,
+        content: resultContents[type],
+        rewardScores,
+        aptitudeScores,
+        combinedScores,
+        percentages,
+        sortedTypes,
+        reasons: selectRelevantReasons(reasons, type),
+        averageRewardLevel
+      };
+    }
+
+    function normalizeFinalScores(
+      scores,
+      minimumPercentage = 10
+    ) {
+      const maximumScore = Math.max(
+        ...JOB_KEYS.map(
+          (jobType) => Number(scores[jobType]) || 0
+        ),
+        1
+      );
+
+      return JOB_KEYS.reduce((percentages, jobType) => {
+        const score = Number(scores[jobType]) || 0;
+
+        percentages[jobType] = Math.min(
+          100,
+          Math.max(
+            minimumPercentage,
+            Math.round((score / maximumScore) * 100)
+          )
+        );
+
+        return percentages;
+      }, {});
+    }
+
+    function getRewardAlignmentBonus(jobType, rewardLevel) {
+      const bonuses = {
+        WEB_PRODUCE: {
+          low: 4,
+          middle: 5,
+          high: 1
+        },
+        WEB_DESIGN: {
+          low: 1,
+          middle: 5,
+          high: 3
+        },
+        VIDEO_EDIT: {
+          low: 5,
+          middle: 2,
+          high: 0
+        },
+        ENGINEER: {
+          low: 0,
+          middle: 2,
+          high: 7
+        },
+        WEB_WRITER: {
+          low: 5,
+          middle: 4,
+          high: 2
+        }
+      };
+
+      if (rewardLevel < 1.55) {
+        return bonuses[jobType].low;
+      }
+
+      if (rewardLevel < 2.45) {
+        return bonuses[jobType].middle;
+      }
+
+      return bonuses[jobType].high;
+    }
+
+    function selectRelevantReasons(reasons, jobType) {
+      const keywordMap = {
+        WEB_PRODUCE: [
+          "Web",
+          "案件",
+          "在宅",
+          "副業",
+          "細かな",
+          "制作"
+        ],
+        WEB_DESIGN: [
+          "デザイン",
+          "見た目",
+          "感性",
+          "配置",
+          "ポートフォリオ"
+        ],
+        VIDEO_EDIT: [
+          "動画",
+          "映像",
+          "短期間",
+          "細かな",
+          "編集"
+        ],
+        ENGINEER: [
+          "転職",
+          "論理",
+          "解決",
+          "専門性",
+          "コード",
+          "本格的"
+        ],
+        WEB_WRITER: [
+          "文章",
+          "情報",
+          "記事",
+          "リサーチ",
+          "在宅",
+          "伝える"
+        ]
+      };
+
+      const keywords = keywordMap[jobType] || [];
+      const uniqueReasons = [...new Set(reasons)];
+
+      const relevantReasons = uniqueReasons.filter(
+        (reason) =>
+          keywords.some((keyword) => reason.includes(keyword))
+      );
+
+      const fallbackReasons = uniqueReasons.filter(
+        (reason) => !relevantReasons.includes(reason)
+      );
+
+      return [
+        ...relevantReasons,
+        ...fallbackReasons
+      ].slice(0, 4);
+    }
+
+    function createResultHtml(result) {
+      return `
+        <div class="space-y-5 safe-bottom">
+          ${createResultHeroHtml(result)}
+          ${createRewardSummaryHtml(result)}
+          ${createCompatibilityHtml(result)}
+          ${createReasonHtml(result)}
+          ${createRouteHtml(result)}
+          ${createRoadmapHtml(result)}
+          ${createJobDetailHtml(result)}
+          ${createOfficialCtaHtml(result)}
+        </div>
+      `;
+    }
+
+    function createResultHeroHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="overflow-hidden rounded-[30px] bg-white shadow-2xl shadow-blue-100/80"
+        >
+          <div
+            class="relative overflow-hidden bg-gradient-to-br from-blue-800 via-blue-600 to-sky-500 px-5 py-7 text-center text-white"
+          >
+            <div
+              class="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20"
+            ></div>
+
+            <div
+              class="absolute -bottom-16 -left-16 h-44 w-44 rounded-full bg-white/10"
+            ></div>
+
+            <p class="relative text-sm font-black text-blue-100">
+              あなたに最適なIT職種は
+            </p>
+
+            <h1
+              class="result-title jp-text relative mt-3 text-[27px] font-black leading-[1.45]"
+            >
+              ${content.label}
+            </h1>
+
+            <p
+              class="manual-break relative mt-3 inline-block rounded-2xl bg-white/18 px-4 py-2 text-sm font-black backdrop-blur"
+            >
+              ${content.typeName}
+            </p>
+
+            <div
+              class="relative mt-5 rounded-2xl border border-white/20 bg-white/12 p-4 text-left backdrop-blur"
+            >
+              <p class="text-xs font-bold text-blue-100">
+                目標報酬ポテンシャル
+              </p>
+
+              <p class="mt-1 text-xl font-black text-white">
+                ${content.potentialLabel}
+              </p>
+            </div>
+          </div>
+
+          <div class="px-5 py-5">
+            <p
+              class="jp-text rounded-2xl bg-blue-50 p-4 text-sm font-bold leading-7 text-slate-700"
+            >
+              ${content.comment}
+            </p>
+          </div>
+        </section>
+      `;
+    }
+
+    function createRewardSummaryHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            REWARD SIMULATION
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            獲得報酬シミュレーション
+          </h2>
+
+          <div class="mt-4 grid grid-cols-1 gap-3">
+            ${createMetricCard(
+              "目標報酬",
+              content.rewardRange,
+              "bg-blue-50 text-blue-700"
+            )}
+
+            ${createMetricCard(
+              "学習期間の目安",
+              content.estimatedPeriod,
+              "bg-sky-50 text-sky-700"
+            )}
+
+            ${createMetricCard(
+              "想定する働き方",
+              content.workStyle,
+              "bg-emerald-50 text-emerald-700"
+            )}
+          </div>
+
+          <div
+            class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4"
+          >
+            <p class="text-xs font-black text-slate-500">
+              最終ゴール
+            </p>
+
+            <p
+              class="jp-text mt-2 text-sm font-black leading-7 text-slate-800"
+            >
+              ${content.goal}
+            </p>
+          </div>
+
+          <p
+            class="jp-text mt-3 text-[11px] font-medium leading-5 text-slate-400"
+          >
+            表示金額は診断上の目標目安であり、収入や案件獲得を保証するものではありません。
+          </p>
+        </section>
+      `;
+    }
+
+    function createMetricCard(label, value, colorClass) {
+      return `
+        <div
+          class="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4"
+        >
+          <p class="text-xs font-black text-slate-500">
+            ${label}
+          </p>
+
+          <p
+            class="jp-text rounded-xl px-3 py-2 text-right text-sm font-black ${colorClass}"
+          >
+            ${value}
+          </p>
+        </div>
+      `;
+    }
+
+    function createCompatibilityHtml(result) {
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            JOB FIT SCORE
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            5職種との相性スコア
+          </h2>
+
+          <div class="mt-5 space-y-4">
+            ${result.sortedTypes.map((jobType) => {
+              const isTop = jobType === result.type;
+              const percentage = result.percentages[jobType];
+
+              return `
+                <div>
+                  <div
+                    class="mb-1 flex items-center justify-between gap-3"
+                  >
+                    <span
+                      class="${
+                        isTop
+                          ? "font-black text-blue-600"
+                          : "font-bold text-slate-600"
+                      } text-sm"
+                    >
+                      ${JOB_LABELS[jobType]}
+                    </span>
+
+                    <span
+                      class="${
+                        isTop
+                          ? "font-black text-blue-600"
+                          : "font-bold text-slate-500"
+                      } text-sm"
+                    >
+                      ${percentage}%
+                    </span>
+                  </div>
+
+                  <div
+                    class="h-3 overflow-hidden rounded-full bg-slate-100"
+                  >
+                    <div
+                      data-result-bar
+                      data-width="${percentage}%"
+                      class="result-bar-fill h-full rounded-full ${
+                        isTop
+                          ? "bg-blue-600"
+                          : "bg-slate-300"
+                      }"
+                    ></div>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function createReasonHtml(result) {
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            WHY THIS JOB
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            この職種がおすすめな理由
+          </h2>
+
+          <div class="mt-4 space-y-3">
+            ${result.reasons.map((reason) => `
+              <div
+                class="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4"
+              >
+                <span
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white"
+                >
+                  ✓
+                </span>
+
+                <p
+                  class="jp-text pt-0.5 text-sm font-bold leading-6 text-slate-700"
+                >
+                  ${escapeHtml(reason)}
+                </p>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function createRouteHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            YOUR ROUTE
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            現在地から目標報酬まで
+          </h2>
+
+          <div class="mt-5 space-y-3">
+            ${createRouteCard(
+              "01",
+              "現在地",
+              "これから適性職種の基礎を学ぶ段階",
+              "bg-slate-100 text-slate-600"
+            )}
+
+            ${createRouteCard(
+              "02",
+              "おすすめ職種",
+              content.label,
+              "bg-blue-100 text-blue-700"
+            )}
+
+            ${createRouteCard(
+              "03",
+              "目標報酬",
+              content.rewardRange,
+              "bg-emerald-100 text-emerald-700"
+            )}
+
+            ${createRouteCard(
+              "04",
+              "最終ゴール",
+              content.goal,
+              "bg-orange-100 text-orange-700"
+            )}
+          </div>
+        </section>
+      `;
+    }
+
+    function createRouteCard(number, label, text, colorClass) {
+      return `
+        <div
+          class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4"
+        >
+          <div
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black ${colorClass}"
+          >
+            ${number}
+          </div>
+
+          <div class="min-w-0">
+            <p class="text-xs font-black text-slate-400">
+              ${label}
+            </p>
+
+            <p
+              class="jp-text mt-1 text-sm font-black leading-6 text-slate-800"
+            >
+              ${text}
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function createRoadmapHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            PERSONAL ROADMAP
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            あなた専用の職業適性ロードマップ
+          </h2>
+
+          <div class="mt-5">
+            ${content.roadmap.map((item, index) => `
+              <div class="flex items-start gap-4">
+                <div class="flex shrink-0 flex-col items-center">
+                  <div
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white shadow-md shadow-blue-100"
+                  >
+                    ${String(index + 1).padStart(2, "0")}
+                  </div>
+
+                  ${
+                    index < content.roadmap.length - 1
+                      ? '<div class="route-line"></div>'
+                      : ""
+                  }
+                </div>
+
+                <div class="min-w-0 pb-5">
+                  <p class="text-xs font-black text-blue-600">
+                    ${item.step}
+                  </p>
+
+                  <h3
+                    class="jp-text mt-1 text-sm font-black leading-6 text-slate-900"
+                  >
+                    ${item.title}
+                  </h3>
+
+                  <p
+                    class="jp-text mt-1 text-sm font-medium leading-6 text-slate-600"
+                  >
+                    ${item.description}
+                  </p>
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function createJobDetailHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="rounded-[26px] bg-white p-5 shadow-lg shadow-blue-100/50"
+        >
+          <p class="text-xs font-black text-blue-600">
+            RECOMMENDED JOB
+          </p>
+
+          <h2
+            class="jp-text mt-1 text-lg font-black text-slate-900"
+          >
+            おすすめ職種
+          </h2>
+
+          <div
+            class="mt-4 rounded-2xl bg-gradient-to-br from-blue-700 to-sky-500 p-5 text-white"
+          >
+            <p class="text-sm font-black text-blue-100">
+              あなたにおすすめ
+            </p>
+
+            <p
+              class="jp-text mt-1 text-2xl font-black leading-9"
+            >
+              ${content.label}
+            </p>
+          </div>
+
+          <div class="mt-4 grid gap-3">
+            ${createInfoCard(
+              "この職種の特徴",
+              content.features
+            )}
+
+            ${createInfoCard(
+              "向いている人",
+              content.suitableFor
+            )}
+
+            ${createInfoCard(
+              "身につけるスキル",
+              content.skills
+            )}
+          </div>
+
+          <a
+            href="${content.ctaUrl}"
+            class="primary-button mt-5 block rounded-2xl bg-blue-600 px-5 py-4 text-center text-sm font-black text-white shadow-lg shadow-blue-100"
+          >
+            ${content.ctaText}
+          </a>
+
+          <p
+            class="jp-text mt-3 text-center text-[11px] font-medium leading-5 text-slate-400"
+          >
+            忍者CODE公式サイトの関連コースへ移動します
+          </p>
+        </section>
+      `;
+    }
+
+    function createInfoCard(title, items) {
+      return `
+        <div
+          class="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+        >
+          <p class="text-sm font-black text-slate-900">
+            ${title}
+          </p>
+
+          <ul
+            class="mt-2 space-y-1.5 text-sm font-medium leading-6 text-slate-600"
+          >
+            ${items.map((item) => `
+              <li class="jp-text flex items-start gap-2">
+                <span
+                  class="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500"
+                ></span>
+
+                <span>${item}</span>
+              </li>
+            `).join("")}
+          </ul>
+        </div>
+      `;
+    }
+
+    function createOfficialCtaHtml(result) {
+      const content = result.content;
+
+      return `
+        <section
+          class="overflow-hidden rounded-[30px] bg-gradient-to-br from-blue-950 via-blue-900 to-slate-950 p-5 text-white shadow-2xl shadow-blue-100/80"
+        >
+          <p
+            class="inline-flex rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-black text-sky-100"
+          >
+            忍者CODE公式の相談窓口
+          </p>
+
+          <h2
+            class="jp-text mt-4 text-2xl font-black leading-9"
+          >
+            あなたに合うIT職種と学習方法を、無料メンターに相談しませんか？
+          </h2>
+
+          <p
+            class="jp-text mt-3 text-sm font-medium leading-7 text-blue-50"
+          >
+            診断結果をもとに、${content.shortLabel}を目指す場合の学習期間、コース選び、仕事の始め方を無料で確認できます。
+          </p>
+
+          <div
+            class="mt-5 rounded-2xl border border-white/15 bg-white/10 p-4"
+          >
+            <p
+              class="jp-text text-xs font-medium leading-6 text-blue-100"
+            >
+              顔出し不要・スマートフォンから参加可能。相談したいことだけを確認できます。
+            </p>
+          </div>
+
+          <a
+            href="${content.consultationUrl}"
+            class="official-cta mt-4 rounded-2xl px-5 py-4 text-center text-base font-black text-white"
+          >
+            <span class="relative z-10">
+              忍者CODE公式の無料メンター相談へ
+            </span>
+          </a>
+
+          <p
+            class="jp-text mt-3 text-center text-[11px] font-bold leading-5 text-blue-100"
+          >
+            忍者CODE公式サイトの予約ページへ移動します
+          </p>
+
+          <button
+            type="button"
+            onclick="restartDiagnosis()"
+            class="secondary-button mt-4 w-full rounded-2xl border border-white/30 bg-white/10 px-5 py-4 text-sm font-black text-white"
+          >
+            もう一度診断する
+          </button>
+        </section>
+      `;
+    }
+
+    function createEmptyScores() {
+      return JOB_KEYS.reduce((scores, jobType) => {
+        scores[jobType] = 0;
+        return scores;
+      }, {});
+    }
+
+    function addScores(targetScores, additionalScores) {
+      JOB_KEYS.forEach((jobType) => {
+        targetScores[jobType] +=
+          Number(additionalScores?.[jobType]) || 0;
+      });
+    }
+
+    function getTopJobType(scores) {
+      const priority = [
+        "ENGINEER",
+        "WEB_PRODUCE",
+        "WEB_DESIGN",
+        "WEB_WRITER",
+        "VIDEO_EDIT"
+      ];
+
+      return [...JOB_KEYS].sort((typeA, typeB) => {
+        const difference =
+          (Number(scores[typeB]) || 0) -
+          (Number(scores[typeA]) || 0);
+
+        if (difference !== 0) {
+          return difference;
+        }
+
+        return (
+          priority.indexOf(typeA) -
+          priority.indexOf(typeB)
+        );
+      })[0];
+    }
+
+    function sortJobTypesByScore(scores) {
+      return [...JOB_KEYS].sort((typeA, typeB) => {
+        const difference =
+          (Number(scores[typeB]) || 0) -
+          (Number(scores[typeA]) || 0);
+
+        if (difference !== 0) {
+          return difference;
+        }
+
+        return (
+          JOB_KEYS.indexOf(typeA) -
+          JOB_KEYS.indexOf(typeB)
+        );
+      });
+    }
+
+    function saveState() {
+      const payload = {
+        version: 2,
+        currentIndex: state.currentIndex,
+        answers: state.answers,
+        screen: state.screen,
+        savedAt: Date.now()
+      };
+
+      try {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(payload)
+        );
+      } catch (error) {
+        console.warn(
+          "診断状態を保存できませんでした。",
+          error
+        );
+      }
+    }
+
+    function loadState() {
+      try {
+        const rawData = localStorage.getItem(STORAGE_KEY);
+
+        if (!rawData) {
+          return null;
+        }
+
+        const parsedData = JSON.parse(rawData);
+
+        if (
+          !parsedData ||
+          !Array.isArray(parsedData.answers) ||
+          parsedData.answers.length !== questions.length
+        ) {
+          return null;
+        }
+
+        const normalizedAnswers = parsedData.answers.map(
+          (answer, index) => {
+            if (
+              answer === null ||
+              answer === undefined
+            ) {
+              return null;
+            }
+
+            const numericAnswer = Number(answer);
+            const optionCount =
+              questions[index]?.options.length || 0;
+
+            if (
+              !Number.isInteger(numericAnswer) ||
+              numericAnswer < 0 ||
+              numericAnswer >= optionCount
+            ) {
+              return null;
+            }
+
+            return numericAnswer;
+          }
+        );
+
+        return {
+          currentIndex: Number.isInteger(parsedData.currentIndex)
+            ? Math.min(
+                Math.max(parsedData.currentIndex, 0),
+                questions.length - 1
+              )
+            : 0,
+          answers: normalizedAnswers,
+          screen: [
+            "start",
+            "question",
+            "middle",
+            "result"
+          ].includes(parsedData.screen)
+            ? parsedData.screen
+            : "start",
+          savedAt: parsedData.savedAt || 0
+        };
+      } catch (error) {
+        console.warn(
+          "診断状態を読み込めませんでした。",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    function clearState() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (error) {
+        console.warn(
+          "診断状態を削除できませんでした。",
+          error
+        );
+      }
+    }
+
+    function applySavedState(savedState) {
+      state.currentIndex = savedState.currentIndex;
+      state.answers = [...savedState.answers];
+      state.screen = savedState.screen;
+    }
+
+    function restoreSavedState() {
+      const savedState = loadState();
+
+      if (!savedState) {
+        state.screen = "start";
+        showOnly("start");
+        clearHash();
+        return;
+      }
+
+      applySavedState(savedState);
+
+      if (
+        state.screen === "result" &&
+        isCompleteAnswers(state.answers)
+      ) {
+        showResult(false);
+        return;
+      }
+
+      if (
+        state.screen === "middle" &&
+        canShowMiddle(state.answers)
+      ) {
+        state.currentIndex = 6;
+        replaceHash("middle");
+        renderMiddleScreen();
+        return;
+      }
+
+      if (state.screen === "question") {
+        const firstUnansweredIndex = state.answers.findIndex(
+          (answer) => answer === null
+        );
+
+        if (
+          firstUnansweredIndex >= 0 &&
+          state.currentIndex > firstUnansweredIndex
+        ) {
+          state.currentIndex = firstUnansweredIndex;
+        }
+
+        replaceHash("question");
+        renderQuestion();
+        return;
+      }
+
+      showOnly("start");
+      clearHash();
+    }
+
+    function showOnly(screenName) {
+      startScreen.classList.add("hidden");
+      questionScreen.classList.add("hidden");
+      middleScreen.classList.add("hidden");
+      resultScreen.classList.add("hidden");
+
+      if (screenName === "start") {
+        startScreen.classList.remove("hidden");
+      }
+
+      if (screenName === "question") {
+        questionScreen.classList.remove("hidden");
+      }
+
+      if (screenName === "middle") {
+        middleScreen.classList.remove("hidden");
+      }
+
+      if (screenName === "result") {
+        resultScreen.classList.remove("hidden");
+      }
+    }
+
+    function setHash(hashName) {
+      if (!hashName) {
+        clearHash();
+        return;
+      }
+
+      const targetHash = `#${hashName}`;
+
+      if (location.hash === targetHash) {
+        return;
+      }
+
+      history.pushState(
+        {
+          screen: hashName
+        },
+        "",
+        targetHash
+      );
+    }
+
+    function replaceHash(hashName) {
+      if (!hashName) {
+        clearHash();
+        return;
+      }
+
+      history.replaceState(
+        {
+          screen: hashName
+        },
+        "",
+        `#${hashName}`
+      );
+    }
+
+    function clearHash() {
+      history.replaceState(
+        {
+          screen: "start"
+        },
+        "",
+        `${location.pathname}${location.search}`
+      );
+    }
+
+    function canShowMiddle(answers) {
+      return (
+        Array.isArray(answers) &&
+        answers
+          .slice(0, 7)
+          .every((answer) => answer !== null)
+      );
+    }
+
+    function isCompleteAnswers(answers) {
+      return (
+        Array.isArray(answers) &&
+        answers.length === questions.length &&
+        answers.every((answer) => answer !== null)
+      );
+    }
+
+    function restartDiagnosis() {
+      clearState();
+
+      state.currentIndex = 0;
+      state.answers = Array(questions.length).fill(null);
+      state.screen = "start";
+
+      resultScreen.innerHTML = "";
+      middleScreen.innerHTML = "";
+
+      clearHash();
+      showOnly("start");
+      scrollToTop();
+    }
+
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: "smooth"
+      });
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
+```
